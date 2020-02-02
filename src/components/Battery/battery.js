@@ -17,7 +17,7 @@ class Battery extends React.Component {
 
    batUpdate(){
     
-    let  charge=this.props.cell.SOH;
+    let  charge=this.props.cell.SOC;
     console.log(charge);
       //console.log("Charge: ",charge);
       let col=null;
@@ -37,9 +37,10 @@ class Battery extends React.Component {
   }
 
   render() {
-    let{cell,single} = this.props;
+    let{cell,single,isHighlight} = this.props;
+    console.log(this.props.isHighlight);
   return ( 
-    <Card onClick={()=>this.props.setBatteryCb(this.props.cell)} bordered={true} className={single?'full':'half'} style={{ height:300,background:"#002640",color:"white","boxShadow": "0 2px 5px 2px rgba(0, 0, 0, 0.16)","margin":10 ,"borderRadius":"8px"}}>
+    <Card onClick={()=>this.props.setBatteryCb(this.props.cell,single)} bordered={true} className={(single?' full ':' half ')+( isHighlight&&isHighlight.SOC===cell.SOC?' blink_me ':' ') } style={{ height:300,background:"#002640",color:"white","boxShadow": "0 2px 5px 2px rgba(0, 0, 0, 0.16)","margin":10 ,"borderRadius":"8px"}}>
       <div id="battery"  ref={(cell) => { this.cell = cell; }}></div>
       
       {single && <div style={{'marginRight':'30px'}}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Layout,Menu,Icon,Row,Col ,Modal} from 'antd';
+import { Layout,Menu,Icon,Row,Col ,Modal,Button} from 'antd';
 import Battery from '../../components/Battery/battery'
 import 'antd/dist/antd.css';
 import {fetchBatteries }from '../../store/actions';
@@ -13,15 +13,19 @@ class BatteryList extends React.Component {
     super(props);
     this.state = {
       collapsed: false,
-      currentBattery:false
+      currentBattery:false,
+      highlightBattery:false
     };
   }
 
-  setBattery = (battery) => {
+  setBattery = (battery,single) => {
     console.log(battery);
-    this.setState({
-      currentBattery: battery,
-    });
+    if(!single){
+      this.setState({
+        currentBattery: battery,
+      });
+    }
+   
   };
 
   showModal = () => {
@@ -48,7 +52,10 @@ class BatteryList extends React.Component {
     this.props.fetchBatteries();
       let interval = setInterval(()=>{
         this.props.fetchBatteries();
-      },36000)
+        this.setState({
+          highlightBattery: false,
+        });
+      },4000)
   }
 
   toggle = () => {
@@ -56,6 +63,19 @@ class BatteryList extends React.Component {
       collapsed: !this.state.collapsed,
     });
   };
+
+  highlight=()=>{
+    let max=this.props.batteryList[0];
+    this.props.batteryList.forEach(item => {
+      if(max.SOC<item.SOC){
+        max=item;
+      }
+    });
+
+    this.setState({
+      highlightBattery: max,
+    });
+  }
 
   render() {
   const {batteryList}=this.props;
@@ -99,10 +119,12 @@ class BatteryList extends React.Component {
               </Row>
           </Content>
           <Content style={{margin: '24px 16px',padding: 24,background: '#f8f8f8',minHeight: 800,}}>
- 
+                <Button type="primary" size={10} onClick={this.highlight}>
+                Swap batteries
+              </Button>
               <Row gutter={[16, 16]}>
                 {batteryList && batteryList.map((val)=>{
-                  return  <Col span={8} key={val.name}  onClick={()=>this.showModal(val)} ><Battery setBatteryCb={this.setBattery} cell={val} /></Col>;
+                  return  <Col span={8} key={val.name}  onClick={()=>this.showModal(val)} ><Battery setBatteryCb={this.setBattery} cell={val} isHighlight={this.state.highlightBattery}/></Col>;
                   })
                 }
                 </Row>
@@ -112,7 +134,7 @@ class BatteryList extends React.Component {
               onOk={this.handleOk}
               onCancel={this.handleCancel}
               >
-              {this.state.currentBattery && <Battery  cell={this.state.currentBattery} single />}
+              {this.state.currentBattery && <Battery  setBatteryCb={this.setBattery}  cell={this.state.currentBattery} single />}
         </Modal>
           </Content>
         </Layout>

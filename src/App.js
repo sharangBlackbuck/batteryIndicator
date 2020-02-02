@@ -4,6 +4,7 @@ import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 
 
 import BatteryList from './containers/BatteryList/BatteryList';
+import Home from './containers/Home/Home';
 import './App.css';
 
 
@@ -15,8 +16,9 @@ class App extends React.Component{
   render(){
     let routes = (
       <Switch>
+      <Route path="/home" component={Home} />
         <Route path="/battery" component={BatteryList} />
-        <Redirect to="/" />
+        <Redirect to="/home" />
       </Switch>
     );
 
